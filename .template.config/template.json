@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Mohashan",
+  "classifications": [ "CleanArchitecture", "WebApi", "C#","Asp.net","MVC","Web" ],
+  "identity": "MTemplate.CleanArchitecture",
+  "name": "M Template : Clean Architecture",
+  "shortName": "MClean",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}
