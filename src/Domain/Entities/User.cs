@@ -4,7 +4,7 @@ using System;
 
 namespace Domain.Entities
 {
-    public class User : AuditableEntity
+    public class User : AuditableEntity, IEntity
     {
         public int Id { get; set; }
         public int RoleId { get; set; }

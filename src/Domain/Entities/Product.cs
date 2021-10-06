@@ -3,7 +3,7 @@ using Domain.Common;
 
 namespace Domain.Entities
 {
-    public class Product : AuditableEntity
+    public class Product : AuditableEntity,IEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

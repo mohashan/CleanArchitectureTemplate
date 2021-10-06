@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Domain.Entities
 {
-    public class Order : AuditableEntity
+    public class Order : AuditableEntity, IEntity
     {
         public int Id { get; set; }
         public string UserName { get; set; }

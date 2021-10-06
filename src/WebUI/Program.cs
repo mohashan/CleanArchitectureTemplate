@@ -1,5 +1,8 @@
+using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
@@ -9,15 +12,16 @@ using Serilog.Sinks.Elasticsearch;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace WebUI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             ConfigureLogging();
-            CreateHost(args);
+            await CreateHost(args);
         }
 
         private static void ConfigureLogging()
@@ -75,19 +79,37 @@ namespace WebUI
             };
         }
 
-        private static void CreateHost(string[] args)
+        private static async Task CreateHost(string[] args)
         {
             try
             {
-                CreateHostBuilder(args).Build().Run();
+                var host = CreateHostBuilder(args).Build();
+
+                using (var scope = host.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    try
+                    {
+                        var context = services.GetRequiredService<ApplicationDbContext>();
+                        if (context.Database.IsSqlServer())
+                        {
+                            await context.Database.MigrateAsync();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("An error occurred while migrating or seeding the database.", ex);
+                    }
+                }
+
+                await host.RunAsync();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Log.Fatal($"Failed to start {Assembly.GetExecutingAssembly().GetName().Name}", ex);
                 throw;
             }
         }
-
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

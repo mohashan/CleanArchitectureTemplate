@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities
+﻿using Domain.Common;
+
+namespace Domain.Entities
 {
-    public class OrderDetail
+    public class OrderDetail:IEntity
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
