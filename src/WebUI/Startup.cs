@@ -25,10 +25,7 @@ namespace WebUI
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseCustomExceptionHandler();
 
             app.UseHttpsRedirection();
             app.UseSerilog();

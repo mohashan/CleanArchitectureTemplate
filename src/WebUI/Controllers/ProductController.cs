@@ -1,4 +1,5 @@
-﻿using Application.Common.Filters;
+﻿using Application.Common.Exceptions;
+using Application.Common.Filters;
 using Application.Common.Interfaces;
 using Application.DataTransferObjects.Products;
 using Domain.Entities;
@@ -59,6 +60,13 @@ namespace WebUI.Controllers
         [HttpPost]
         public async Task<ActionResult<ShowProductDto>> Create([FromBody] CreateProductDto product, CancellationToken cancellationToken)
         {
+            var oldProduct = await _productRepository.TableNoTracking.FirstOrDefaultAsync(p => p.Name == product.Name, cancellationToken);
+
+            if (oldProduct != null)
+            {
+                throw new BadRequestException("Product with this name is exist");
+            }
+
             var newProduct = new Product
             {
                 Name = product.Name,
@@ -83,7 +91,14 @@ namespace WebUI.Controllers
         {
             if (id != product.Id)
             {
-                return NotFound();
+                throw new BadRequestException("There are no such products available");
+            }
+
+            var oldProduct = await _productRepository.TableNoTracking.FirstOrDefaultAsync(p => p.Name == product.Name && p.Id != id, cancellationToken);
+
+            if (oldProduct != null)
+            {
+                throw new BadRequestException("Product with this name is exist");
             }
 
             var newProduct = new Product
@@ -111,7 +126,7 @@ namespace WebUI.Controllers
             var product = await _productRepository.GetByIdAsync(cancellationToken, id);
             if (product == null)
             {
-                return NotFound();
+                throw new BadRequestException("There are no such products available");
             }
 
             await _productRepository.DeleteAsync(product, cancellationToken);
