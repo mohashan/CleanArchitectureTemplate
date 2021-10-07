@@ -1,5 +1,6 @@
 ﻿using Application.Common.Filters;
 using Application.Common.Interfaces;
+using Application.DataTransferObjects.Products;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,17 +24,29 @@ namespace WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Product>> Get(CancellationToken cancellationToken)
+        public async Task<List<ShowProductDto>> Get(CancellationToken cancellationToken)
         {
-            var products = await _productRepository.TableNoTracking.ToListAsync(cancellationToken);
+            var products = await _productRepository.TableNoTracking.Select(p => new ShowProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Amount = p.Amount,
+                Description = p.Description
+            }).ToListAsync(cancellationToken);
             return products;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> Get([FromRoute] int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ShowProductDto>> Get([FromRoute] int id, CancellationToken cancellationToken)
         {
             var product =
-                await _productRepository.TableNoTracking.Where(p => p.Id == id).FirstOrDefaultAsync(cancellationToken);
+                await _productRepository.TableNoTracking.Where(p => p.Id == id).Select(p => new ShowProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Amount = p.Amount,
+                    Description = p.Description
+                }).FirstOrDefaultAsync(cancellationToken);
 
             if (product == null)
             {
@@ -44,20 +57,33 @@ namespace WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Product>> Create([FromBody] Product product, CancellationToken cancellationToken)
+        public async Task<ActionResult<ShowProductDto>> Create([FromBody] CreateProductDto product, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            await _productRepository.AddAsync(product, cancellationToken);
+            var newProduct = new Product
+            {
+                Name = product.Name,
+                Amount = product.Amount,
+                Description = product.Description
+            };
 
-            return product;
+            await _productRepository.AddAsync(newProduct, cancellationToken);
+
+            return new ShowProductDto
+            {
+                Id = newProduct.Id,
+                Name = newProduct.Name,
+                Amount = newProduct.Amount,
+                Description = newProduct.Description
+            };
         }
 
-        [HttpPut]
-        public async Task<ActionResult<Product>> Update([FromRoute] int id, [FromBody] Product product,
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ShowProductDto>> Update([FromRoute] int id, [FromBody] UpdateProductDto product,
             CancellationToken cancellationToken)
         {
             if (id != product.Id)
@@ -70,13 +96,27 @@ namespace WebUI.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _productRepository.UpdateAsync(product, cancellationToken);
+            var newProduct = new Product
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Amount = product.Amount,
+                Description = product.Description
+            };
 
-            return product;
+            await _productRepository.UpdateAsync(newProduct, cancellationToken);
+
+            return new ShowProductDto
+            {
+                Id = newProduct.Id,
+                Name = newProduct.Name,
+                Amount = newProduct.Amount,
+                Description = newProduct.Description
+            };
         }
 
-        [HttpDelete]
-        public async Task<ActionResult<Product>> Delete([FromRoute] int id, CancellationToken cancellationToken)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ShowProductDto>> Delete([FromRoute] int id, CancellationToken cancellationToken)
         {
             var product = await _productRepository.GetByIdAsync(cancellationToken, id);
             if (product == null)
@@ -85,7 +125,13 @@ namespace WebUI.Controllers
             }
 
             await _productRepository.DeleteAsync(product, cancellationToken);
-            return product;
+            return new ShowProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Amount = product.Amount,
+                Description = product.Description
+            };
         }
     }
 }
