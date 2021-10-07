@@ -59,11 +59,6 @@ namespace WebUI.Controllers
         [HttpPost]
         public async Task<ActionResult<ShowProductDto>> Create([FromBody] CreateProductDto product, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var newProduct = new Product
             {
                 Name = product.Name,
@@ -89,11 +84,6 @@ namespace WebUI.Controllers
             if (id != product.Id)
             {
                 return NotFound();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
             }
 
             var newProduct = new Product
