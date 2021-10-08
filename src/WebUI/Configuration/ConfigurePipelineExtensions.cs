@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Infrastructure.Middlewares;
+using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Events;
 
@@ -26,6 +27,11 @@ namespace WebUI.Configuration
                     diagnosticContext.Set("RequestQueryString", httpContext.Request.QueryString);
                 };
             });
+        }
+
+        public static void UseCustomExceptionHandler(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<CustomExceptionHandlerMiddleware>();
         }
     }
 }

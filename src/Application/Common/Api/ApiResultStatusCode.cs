@@ -17,6 +17,12 @@ namespace Application.Common.Api
         NotFound = 3,
 
         [Display(Name = "List is empty")]
-        ListEmpty = 4
+        ListEmpty = 4,
+
+        [Display(Name = "Logic Error")]
+        LogicError = 5,
+
+        [Display(Name = "UnAuthorized")]
+        UnAuthorized = 6
     }
 }

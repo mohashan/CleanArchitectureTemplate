@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Domain.Common;
+﻿using Domain.Common;
+using System.Collections.Generic;
 
 namespace Domain.Entities
 {
-    public class Product : AuditableEntity,IEntity
+    public class Product : AuditableEntity, IEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
