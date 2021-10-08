@@ -2,6 +2,7 @@
 using Application.Common.Exceptions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -15,11 +16,11 @@ namespace Infrastructure.Middlewares
     public class CustomExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly ILogger<CustomExceptionHandlerMiddleware> _logger;
 
         public CustomExceptionHandlerMiddleware(RequestDelegate next,
-            IHostingEnvironment env,
+            IWebHostEnvironment env,
             ILogger<CustomExceptionHandlerMiddleware> logger)
         {
             _next = next;

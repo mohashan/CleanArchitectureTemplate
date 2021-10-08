@@ -13,6 +13,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebUI
 {
@@ -95,6 +97,11 @@ namespace WebUI
                         {
                             await context.Database.MigrateAsync();
                         }
+
+                        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                        var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+
+                        await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
                     }
                     catch (Exception ex)
                     {

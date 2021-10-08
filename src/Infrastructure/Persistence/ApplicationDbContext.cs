@@ -1,11 +1,13 @@
 ﻿using Application.Common.Utilities;
 using Domain.Common;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Infrastructure.Persistence
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
