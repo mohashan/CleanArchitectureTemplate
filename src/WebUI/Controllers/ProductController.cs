@@ -3,6 +3,7 @@ using Application.Common.Filters;
 using Application.Common.Interfaces;
 using Application.DataTransferObjects.Products;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace WebUI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ApiResultFilter]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private readonly IRepository<Product> _productRepository;

@@ -18,7 +18,6 @@
   </ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Common\Interfaces\" />
 	  <Folder Include="DataTransferObjects\Products\" />
 	</ItemGroup>
 
