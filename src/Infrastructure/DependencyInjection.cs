@@ -1,4 +1,5 @@
 ﻿using Application.Common.Api;
+using Application.Common.Configuration;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Domain.Entities;
@@ -21,7 +22,7 @@ namespace Infrastructure
 {
     public static class DependencyInjection
     {
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, ApplicationConfiguration applicationConfiguration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {
@@ -31,18 +32,17 @@ namespace Infrastructure
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-
             #region Identity
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
-                options.Password.RequiredLength = 8;
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = applicationConfiguration.IdentityConfiguration.PasswordRequiredLength;
+                options.Password.RequireDigit = applicationConfiguration.IdentityConfiguration.PasswordRequireDigit;
+                options.Password.RequireLowercase = applicationConfiguration.IdentityConfiguration.PasswordRequireLowercase;
+                options.Password.RequireUppercase = applicationConfiguration.IdentityConfiguration.PasswordRequireUppercase;
+                options.Password.RequireNonAlphanumeric = applicationConfiguration.IdentityConfiguration.PasswordRequireNonAlphanumeric;
 
-                options.User.RequireUniqueEmail = true;
+                options.User.RequireUniqueEmail = applicationConfiguration.IdentityConfiguration.RequireUniqueEmail;
             }).AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -57,8 +57,8 @@ namespace Infrastructure
 
             }).AddJwtBearer(options =>
             {
-                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("LongerThan16Char"));
-                var encryptKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MustBe16Char...."));
+                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(applicationConfiguration.JwtConfiguration.SecretKey));
+                var encryptKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(applicationConfiguration.JwtConfiguration.EncryptKey));
 
                 var validationParameters = new TokenValidationParameters
                 {
@@ -72,10 +72,10 @@ namespace Infrastructure
                     ValidateLifetime = true,
 
                     ValidateAudience = true,
-                    ValidAudience = "MyWebSite",
+                    ValidAudience = applicationConfiguration.JwtConfiguration.Audience,
 
                     ValidateIssuer = true,
-                    ValidIssuer = "MyWebSite",
+                    ValidIssuer = applicationConfiguration.JwtConfiguration.Issuer,
 
                     TokenDecryptionKey = encryptKey
                 };
