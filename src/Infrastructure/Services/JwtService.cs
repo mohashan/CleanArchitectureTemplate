@@ -1,6 +1,8 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Configuration;
+using Application.Common.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -15,19 +17,21 @@ namespace Infrastructure.Services
     public class JwtService : IJwtService
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationConfiguration _applicationConfiguration;
 
-        public JwtService(SignInManager<ApplicationUser> signInManager)
+        public JwtService(SignInManager<ApplicationUser> signInManager, IOptionsSnapshot<ApplicationConfiguration> applicationConfiguration)
         {
             _signInManager = signInManager;
+            _applicationConfiguration = applicationConfiguration.Value;
         }
 
         public async Task<string> GenerateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("LongerThan16Char"));
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_applicationConfiguration.JwtConfiguration.SecretKey));
             var signingCredentials =
                 new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature);
 
-            var encryptKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MustBe16Char...."));
+            var encryptKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_applicationConfiguration.JwtConfiguration.EncryptKey));
             var encryptingCredentials =
                 new EncryptingCredentials(encryptKey, SecurityAlgorithms.Aes128KW, SecurityAlgorithms.Aes128CbcHmacSha256);
 
@@ -35,11 +39,11 @@ namespace Infrastructure.Services
 
             var descriptor = new SecurityTokenDescriptor
             {
-                Issuer = "MyWebSite",
-                Audience = "MyWebSite",
+                Issuer = _applicationConfiguration.JwtConfiguration.Issuer,
+                Audience = _applicationConfiguration.JwtConfiguration.Audience,
                 IssuedAt = DateTime.Now,
-                NotBefore = DateTime.Now,
-                Expires = DateTime.Now.AddHours(1),
+                NotBefore = DateTime.Now.AddMinutes(_applicationConfiguration.JwtConfiguration.NotBeforeMinutes),
+                Expires = DateTime.Now.AddHours(_applicationConfiguration.JwtConfiguration.ExpirationMinutes),
                 SigningCredentials = signingCredentials,
                 EncryptingCredentials = encryptingCredentials,
                 Subject = new ClaimsIdentity(claims)

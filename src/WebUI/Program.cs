@@ -1,5 +1,8 @@
+using Application.Common.Configuration;
+using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,8 +16,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 
 namespace WebUI
 {
@@ -36,6 +37,9 @@ namespace WebUI
                     optional: true)
                 .Build();
 
+            var applicationConfiguration = configuration.GetSection(nameof(ApplicationConfiguration))
+                .Get<ApplicationConfiguration>();
+
             var loggerConfiguration = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
@@ -49,13 +53,13 @@ namespace WebUI
                 .Enrich.WithThreadName();
 
             // If environment is development or NeedWriteLogToConsole == true, log to console
-            if (environment?.ToLower() == "development" || configuration.GetValue<bool>("SerilogCustomConfiguration:NeedWriteLogToConsole") == true)
+            if (environment?.ToLower() == "development" || applicationConfiguration.SerilogConfiguration.NeedWriteLogToConsole == true)
             {
                 loggerConfiguration = loggerConfiguration.WriteTo.Console(LogEventLevel.Information);
             }
 
             // If NeedWriteLogToFile == true, log to file
-            if (configuration.GetValue<bool>("SerilogCustomConfiguration:NeedWriteLogToFile") == true)
+            if (applicationConfiguration.SerilogConfiguration.NeedWriteLogToFile == true)
             {
                 loggerConfiguration = loggerConfiguration.WriteTo.File(
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "logs", "log.log"),
@@ -63,17 +67,17 @@ namespace WebUI
             }
 
             // If NeedWriteLogToElasticSearch == true, log to elasticSearch
-            if (configuration.GetValue<bool>("SerilogCustomConfiguration:NeedWriteLogToElasticSearch") == true)
+            if (applicationConfiguration.SerilogConfiguration.NeedWriteLogToElasticSearch == true)
             {
-                loggerConfiguration = loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment));
+                loggerConfiguration = loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment, applicationConfiguration));
             }
 
             Log.Logger = loggerConfiguration.ReadFrom.Configuration(configuration).CreateLogger();
         }
 
-        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
+        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment, ApplicationConfiguration applicationConfiguration)
         {
-            return new ElasticsearchSinkOptions(new Uri(configuration["SerilogCustomConfiguration:ElasticConfiguration:Uri"]))
+            return new ElasticsearchSinkOptions(new Uri(applicationConfiguration.SerilogConfiguration.ElasticConfiguration.Uri))
             {
                 AutoRegisterTemplate = true,
                 CustomFormatter = new ElasticsearchJsonFormatter(),

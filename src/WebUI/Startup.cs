@@ -1,3 +1,4 @@
+using Application.Common.Configuration;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,16 +10,21 @@ namespace WebUI
 {
     public class Startup
     {
+        private readonly ApplicationConfiguration _applicationConfiguration;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            _applicationConfiguration = configuration.GetSection(nameof(ApplicationConfiguration))
+                .Get<ApplicationConfiguration>();
         }
 
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddInfrastructure(Configuration);
+            services.Configure<ApplicationConfiguration>(Configuration.GetSection(nameof(ApplicationConfiguration)));
+            services.AddInfrastructure(Configuration, _applicationConfiguration);
             services.AddControllers();
         }
 

@@ -18,6 +18,7 @@
   </ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Common\Configuration\" />
 	  <Folder Include="DataTransferObjects\Products\" />
 	</ItemGroup>
 
