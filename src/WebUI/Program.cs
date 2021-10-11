@@ -1,4 +1,5 @@
 using Application.Common.Configuration;
+using Autofac.Extensions.DependencyInjection;
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
@@ -124,6 +125,7 @@ namespace WebUI
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

@@ -5,10 +5,11 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.ServiceLifetimes;
 
 namespace Infrastructure.Services
 {
-    public class IdentityService : IIdentityService
+    public class IdentityService : IIdentityService, IScopedDependency
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IJwtService _jwtService;
