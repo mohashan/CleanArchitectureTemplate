@@ -11,10 +11,11 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.ServiceLifetimes;
 
 namespace Infrastructure.Services
 {
-    public class JwtService : IJwtService
+    public class JwtService : IJwtService, IScopedDependency
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationConfiguration _applicationConfiguration;

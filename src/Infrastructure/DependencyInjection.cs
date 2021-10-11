@@ -46,9 +46,6 @@ namespace Infrastructure
             }).AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddScoped(typeof(IIdentityService), typeof(IdentityService));
-            services.AddScoped(typeof(IJwtService), typeof(JwtService));
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
