@@ -1,11 +1,10 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Filters;
+﻿using Application.Common.Controller;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Application.DataTransferObjects.Products;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -15,12 +14,7 @@ using System.Threading.Tasks;
 
 namespace WebUI.Controllers.V1
 {
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiController]
-    [ApiResultFilter]
-    [Authorize]
-    [ApiVersion("1")]
-    public class ProductController : ControllerBase
+    public class ProductController : BaseController
     {
         private readonly IRepository<Product> _productRepository;
         private readonly IMapper _mapper;

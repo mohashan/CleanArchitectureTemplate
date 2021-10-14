@@ -1,4 +1,4 @@
-﻿using Application.Common.Filters;
+﻿using Application.Common.Controller;
 using Application.Common.Interfaces;
 using Application.DataTransferObjects.User;
 using Microsoft.AspNetCore.Authorization;
@@ -9,11 +9,7 @@ using System.Threading.Tasks;
 
 namespace WebUI.Controllers.V1
 {
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiController]
-    [ApiResultFilter]
-    [ApiVersion("1")]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
         private readonly IIdentityService _identityService;
         private readonly ILogger<UserController> _logger;
