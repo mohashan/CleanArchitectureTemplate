@@ -13,12 +13,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WebUI.Controllers
+namespace WebUI.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiResultFilter]
     [Authorize]
+    [ApiVersion("1")]
     public class ProductController : ControllerBase
     {
         private readonly IRepository<Product> _productRepository;
@@ -31,7 +32,7 @@ namespace WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<List<ShowProductDto>> Get(CancellationToken cancellationToken)
+        public virtual async Task<List<ShowProductDto>> Get(CancellationToken cancellationToken)
         {
             var products = await _productRepository
                 .TableNoTracking
@@ -41,7 +42,7 @@ namespace WebUI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ShowProductDto>> Get([FromRoute] int id, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult<ShowProductDto>> Get([FromRoute] int id, CancellationToken cancellationToken)
         {
             var product =
                 await _productRepository.TableNoTracking.Where(p => p.Id == id)
@@ -57,7 +58,7 @@ namespace WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ShowProductDto>> Create([FromBody] CreateProductDto product, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult<ShowProductDto>> Create([FromBody] CreateProductDto product, CancellationToken cancellationToken)
         {
             if (await _productRepository.TableNoTracking
                 .AnyAsync(p => p.Name == product.Name, cancellationToken))
@@ -72,7 +73,7 @@ namespace WebUI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ShowProductDto>> Update([FromRoute] int id, [FromBody] UpdateProductDto product,
+        public virtual async Task<ActionResult<ShowProductDto>> Update([FromRoute] int id, [FromBody] UpdateProductDto product,
             CancellationToken cancellationToken)
         {
             if (id != product.Id)
@@ -93,7 +94,7 @@ namespace WebUI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<ShowProductDto>> Delete([FromRoute] int id, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult<ShowProductDto>> Delete([FromRoute] int id, CancellationToken cancellationToken)
         {
             var product = await _productRepository.GetByIdAsync(cancellationToken, id);
             if (product == null)

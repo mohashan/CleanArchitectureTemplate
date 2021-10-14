@@ -7,11 +7,12 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WebUI.Controllers
+namespace WebUI.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [ApiResultFilter]
+    [ApiVersion("1")]
     public class UserController : ControllerBase
     {
         private readonly IIdentityService _identityService;
@@ -25,7 +26,7 @@ namespace WebUI.Controllers
 
         [HttpPost("SignIn")]
         [AllowAnonymous]
-        public async Task<SignInResultDto> SignIn([FromBody] SignInDto signIn, CancellationToken cancellationToken)
+        public virtual async Task<SignInResultDto> SignIn([FromBody] SignInDto signIn, CancellationToken cancellationToken)
         {
             var result = await _identityService.SignInAsync(signIn, cancellationToken);
             return result;
