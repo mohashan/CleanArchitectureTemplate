@@ -1,3 +1,4 @@
+using Application;
 using Application.Common.Configuration;
 using Autofac;
 using Infrastructure;
@@ -26,6 +27,7 @@ namespace WebUI
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ApplicationConfiguration>(Configuration.GetSection(nameof(ApplicationConfiguration)));
+            services.AddApplication(Configuration);
             services.AddInfrastructure(Configuration, _applicationConfiguration);
             services.AddControllers();
         }
