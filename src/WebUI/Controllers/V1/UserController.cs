@@ -1,4 +1,4 @@
-﻿using Application.Common.Filters;
+﻿using Application.Common.Controller;
 using Application.Common.Interfaces;
 using Application.DataTransferObjects.User;
 using Microsoft.AspNetCore.Authorization;
@@ -7,12 +7,9 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WebUI.Controllers
+namespace WebUI.Controllers.V1
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [ApiResultFilter]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
         private readonly IIdentityService _identityService;
         private readonly ILogger<UserController> _logger;
@@ -25,7 +22,7 @@ namespace WebUI.Controllers
 
         [HttpPost("SignIn")]
         [AllowAnonymous]
-        public async Task<SignInResultDto> SignIn([FromBody] SignInDto signIn, CancellationToken cancellationToken)
+        public virtual async Task<SignInResultDto> SignIn([FromBody] SignInDto signIn, CancellationToken cancellationToken)
         {
             var result = await _identityService.SignInAsync(signIn, cancellationToken);
             return result;

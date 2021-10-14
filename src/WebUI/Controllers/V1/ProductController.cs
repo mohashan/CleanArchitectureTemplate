@@ -1,11 +1,10 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Filters;
+﻿using Application.Common.Controller;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Application.DataTransferObjects.Products;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -13,13 +12,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WebUI.Controllers
+namespace WebUI.Controllers.V1
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [ApiResultFilter]
-    [Authorize]
-    public class ProductController : ControllerBase
+    public class ProductController : BaseController
     {
         private readonly IRepository<Product> _productRepository;
         private readonly IMapper _mapper;
@@ -31,7 +26,7 @@ namespace WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<List<ShowProductDto>> Get(CancellationToken cancellationToken)
+        public virtual async Task<List<ShowProductDto>> Get(CancellationToken cancellationToken)
         {
             var products = await _productRepository
                 .TableNoTracking
@@ -41,7 +36,7 @@ namespace WebUI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ShowProductDto>> Get([FromRoute] int id, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult<ShowProductDto>> Get([FromRoute] int id, CancellationToken cancellationToken)
         {
             var product =
                 await _productRepository.TableNoTracking.Where(p => p.Id == id)
@@ -57,7 +52,7 @@ namespace WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ShowProductDto>> Create([FromBody] CreateProductDto product, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult<ShowProductDto>> Create([FromBody] CreateProductDto product, CancellationToken cancellationToken)
         {
             if (await _productRepository.TableNoTracking
                 .AnyAsync(p => p.Name == product.Name, cancellationToken))
@@ -72,7 +67,7 @@ namespace WebUI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ShowProductDto>> Update([FromRoute] int id, [FromBody] UpdateProductDto product,
+        public virtual async Task<ActionResult<ShowProductDto>> Update([FromRoute] int id, [FromBody] UpdateProductDto product,
             CancellationToken cancellationToken)
         {
             if (id != product.Id)
@@ -93,7 +88,7 @@ namespace WebUI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<ShowProductDto>> Delete([FromRoute] int id, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult<ShowProductDto>> Delete([FromRoute] int id, CancellationToken cancellationToken)
         {
             var product = await _productRepository.GetByIdAsync(cancellationToken, id);
             if (product == null)
