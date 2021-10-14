@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -127,7 +128,7 @@ namespace Infrastructure.Middlewares
                     };
                     if (exception is SecurityTokenExpiredException tokenException)
                     {
-                        dic.Add("Expires", tokenException.Expires.ToString());
+                        dic.Add("Expires", tokenException.Expires.ToString(CultureInfo.InvariantCulture));
                     }
 
                     message = JsonConvert.SerializeObject(dic);

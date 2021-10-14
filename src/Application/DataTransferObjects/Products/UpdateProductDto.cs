@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Application.DataTransferObjects.Common;
+using Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.DataTransferObjects.Products
 {
-    public class UpdateProductDto
+    public class UpdateProductDto : BaseDto<UpdateProductDto, Product>
     {
-        public int Id { get; set; }
-
         [Display(Name = "product name")]
         [Required(ErrorMessage = "{0} is required")]
         [MaxLength(50, ErrorMessage = "max length for {0} has {1} char")]

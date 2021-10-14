@@ -2,6 +2,8 @@
 using Application.Common.Filters;
 using Application.Common.Interfaces;
 using Application.DataTransferObjects.Products;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,22 +22,21 @@ namespace WebUI.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IRepository<Product> _productRepository;
+        private readonly IMapper _mapper;
 
-        public ProductController(IRepository<Product> productRepository)
+        public ProductController(IRepository<Product> productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<List<ShowProductDto>> Get(CancellationToken cancellationToken)
         {
-            var products = await _productRepository.TableNoTracking.Select(p => new ShowProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Amount = p.Amount,
-                Description = p.Description
-            }).ToListAsync(cancellationToken);
+            var products = await _productRepository
+                .TableNoTracking
+                .ProjectTo<ShowProductDto>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
             return products;
         }
 
@@ -43,13 +44,9 @@ namespace WebUI.Controllers
         public async Task<ActionResult<ShowProductDto>> Get([FromRoute] int id, CancellationToken cancellationToken)
         {
             var product =
-                await _productRepository.TableNoTracking.Where(p => p.Id == id).Select(p => new ShowProductDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Amount = p.Amount,
-                    Description = p.Description
-                }).FirstOrDefaultAsync(cancellationToken);
+                await _productRepository.TableNoTracking.Where(p => p.Id == id)
+                    .ProjectTo<ShowProductDto>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(cancellationToken);
 
             if (product == null)
             {
@@ -62,29 +59,16 @@ namespace WebUI.Controllers
         [HttpPost]
         public async Task<ActionResult<ShowProductDto>> Create([FromBody] CreateProductDto product, CancellationToken cancellationToken)
         {
-            var oldProduct = await _productRepository.TableNoTracking.FirstOrDefaultAsync(p => p.Name == product.Name, cancellationToken);
-
-            if (oldProduct != null)
+            if (await _productRepository.TableNoTracking
+                .AnyAsync(p => p.Name == product.Name, cancellationToken))
             {
                 throw new BadRequestException("Product with this name is exist");
             }
 
-            var newProduct = new Product
-            {
-                Name = product.Name,
-                Amount = product.Amount,
-                Description = product.Description
-            };
-
+            var newProduct = product.ToEntity(_mapper);
             await _productRepository.AddAsync(newProduct, cancellationToken);
 
-            return new ShowProductDto
-            {
-                Id = newProduct.Id,
-                Name = newProduct.Name,
-                Amount = newProduct.Amount,
-                Description = newProduct.Description
-            };
+            return ShowProductDto.FromEntity(_mapper, newProduct);
         }
 
         [HttpPut("{id}")]
@@ -96,30 +80,16 @@ namespace WebUI.Controllers
                 throw new BadRequestException("There are no such products available");
             }
 
-            var oldProduct = await _productRepository.TableNoTracking.FirstOrDefaultAsync(p => p.Name == product.Name && p.Id != id, cancellationToken);
-
-            if (oldProduct != null)
+            if (await _productRepository.TableNoTracking
+                .AnyAsync(p => p.Name == product.Name && p.Id != id, cancellationToken))
             {
                 throw new BadRequestException("Product with this name is exist");
             }
 
-            var newProduct = new Product
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Amount = product.Amount,
-                Description = product.Description
-            };
-
+            var newProduct = product.ToEntity(_mapper);
             await _productRepository.UpdateAsync(newProduct, cancellationToken);
 
-            return new ShowProductDto
-            {
-                Id = newProduct.Id,
-                Name = newProduct.Name,
-                Amount = newProduct.Amount,
-                Description = newProduct.Description
-            };
+            return ShowProductDto.FromEntity(_mapper, newProduct);
         }
 
         [HttpDelete("{id}")]
@@ -132,13 +102,7 @@ namespace WebUI.Controllers
             }
 
             await _productRepository.DeleteAsync(product, cancellationToken);
-            return new ShowProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Amount = product.Amount,
-                Description = product.Description
-            };
+            return ShowProductDto.FromEntity(_mapper, product);
         }
     }
 }
