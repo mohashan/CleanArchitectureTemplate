@@ -35,7 +35,7 @@ namespace Infrastructure.Persistence
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+            foreach (var entry in ChangeTracker.Entries<IEntity>())
             {
                 switch (entry.State)
                 {
@@ -48,6 +48,18 @@ namespace Infrastructure.Persistence
                         entry.Entity.LastModifiedBy = _currentUserService.UserId;
                         entry.Entity.LastModified = _dateTimeService.Now;
                         break;
+                    case EntityState.Detached:
+                        break;
+                    case EntityState.Unchanged:
+                        break;
+                    case EntityState.Deleted:
+                        entry.Entity.IsDeleted = true;
+                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
+                        entry.Entity.LastModified = _dateTimeService.Now;
+                        entry.State = EntityState.Modified;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 

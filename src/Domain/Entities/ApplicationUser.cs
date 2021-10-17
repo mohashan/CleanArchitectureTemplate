@@ -11,5 +11,10 @@ namespace Domain.Entities
         public string Family { get; set; }
         public DateTime BirthDay { get; set; }
         public Gender Gender { get; set; }
+        public DateTime Created { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime? LastModified { get; set; }
+        public string LastModifiedBy { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

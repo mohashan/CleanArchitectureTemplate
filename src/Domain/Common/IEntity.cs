@@ -1,11 +1,14 @@
-﻿namespace Domain.Common
-{
-    public interface IEntity<TKey>
-    {
-        public TKey Id { get; set; }
-    }
+﻿using System;
 
-    public interface IEntity : IEntity<int>
+namespace Domain.Common
+{
+    public interface IEntity
     {
+        public int Id { get; set; }
+        public DateTime Created { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime? LastModified { get; set; }
+        public string LastModifiedBy { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
