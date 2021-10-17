@@ -13,6 +13,13 @@ namespace Infrastructure.Persistence.Configurations
             builder.Property(o => o.Amount).IsRequired();
             builder.Property(o => o.UserName).IsRequired().HasMaxLength(100);
 
+            builder.Property(o => o.CreatedBy).IsRequired().HasMaxLength(10);
+            builder.Property(o => o.Created).IsRequired();
+            builder.Property(o => o.LastModifiedBy).IsRequired(false).HasMaxLength(10);
+            builder.Property(o => o.LastModified).IsRequired(false);
+            builder.Property(o => o.IsDeleted).IsRequired();
+
+
             builder.HasMany(o => o.OrderDetails).WithOne(od => od.Order).HasForeignKey(od => od.OrderId);
         }
     }

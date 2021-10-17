@@ -14,7 +14,10 @@ namespace Infrastructure.Persistence
             var administratorRole = new ApplicationRole
             {
                 Name = "Administrator",
-                ConcurrencyStamp = Guid.NewGuid().ToString()
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                Created = DateTime.Now,
+                CreatedBy = "0",
+                IsDeleted = false
             };
 
             if (roleManager.Roles.All(r => r.Name != administratorRole.Name))
@@ -33,11 +36,14 @@ namespace Infrastructure.Persistence
             {
                 UserName = "admin",
                 Email = "admin@gmail.com",
-                BirthDay = DateTime.Now,
+                BirthDay = new DateTime(1994, 04, 25, 6, 30, 0),
                 Gender = Gender.Man,
                 Name = "Reza",
                 Family = "Neyestani",
-                ConcurrencyStamp = Guid.NewGuid().ToString()
+                ConcurrencyStamp = Guid.NewGuid().ToString(),
+                Created = DateTime.Now,
+                CreatedBy = "0",
+                IsDeleted = false
             };
 
             if (userManager.Users.All(u => u.UserName != administrator.UserName))

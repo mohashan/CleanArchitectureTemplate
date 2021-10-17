@@ -54,13 +54,13 @@ namespace WebUI
                 .Enrich.WithThreadName();
 
             // If environment is development or NeedWriteLogToConsole == true, log to console
-            if (environment?.ToLower() == "development" || applicationConfiguration.SerilogConfiguration.NeedWriteLogToConsole == true)
+            if (environment?.ToLower() == "development" || applicationConfiguration.SerilogConfiguration.NeedWriteLogToConsole)
             {
                 loggerConfiguration = loggerConfiguration.WriteTo.Console(LogEventLevel.Information);
             }
 
             // If NeedWriteLogToFile == true, log to file
-            if (applicationConfiguration.SerilogConfiguration.NeedWriteLogToFile == true)
+            if (applicationConfiguration.SerilogConfiguration.NeedWriteLogToFile)
             {
                 loggerConfiguration = loggerConfiguration.WriteTo.File(
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "logs", "log.log"),
@@ -68,15 +68,15 @@ namespace WebUI
             }
 
             // If NeedWriteLogToElasticSearch == true, log to elasticSearch
-            if (applicationConfiguration.SerilogConfiguration.NeedWriteLogToElasticSearch == true)
+            if (applicationConfiguration.SerilogConfiguration.NeedWriteLogToElasticSearch)
             {
-                loggerConfiguration = loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment, applicationConfiguration));
+                loggerConfiguration = loggerConfiguration.WriteTo.Elasticsearch(ConfigureElasticSink(environment, applicationConfiguration));
             }
 
             Log.Logger = loggerConfiguration.ReadFrom.Configuration(configuration).CreateLogger();
         }
 
-        private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment, ApplicationConfiguration applicationConfiguration)
+        private static ElasticsearchSinkOptions ConfigureElasticSink(string environment, ApplicationConfiguration applicationConfiguration)
         {
             return new ElasticsearchSinkOptions(new Uri(applicationConfiguration.SerilogConfiguration.ElasticConfiguration.Uri))
             {
