@@ -9,7 +9,7 @@ namespace Domain.Entities
     {
         public string Name { get; set; }
         public string Family { get; set; }
-        public DateTime BirthDay { get; set; }
+        public DateTime? BirthDay { get; set; }
         public Gender Gender { get; set; }
         public DateTime Created { get; set; }
         public string CreatedBy { get; set; }

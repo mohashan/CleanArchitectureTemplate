@@ -13,6 +13,12 @@ namespace Infrastructure.Persistence.Configurations
             builder.Property(r => r.Name).IsRequired().HasMaxLength(50);
             builder.Property(r => r.NormalizedName).IsRequired().HasMaxLength(50);
             builder.Property(r => r.ConcurrencyStamp).IsRequired().HasMaxLength(50);
+
+            builder.Property(r => r.CreatedBy).IsRequired().HasMaxLength(10);
+            builder.Property(r => r.Created).IsRequired();
+            builder.Property(r => r.LastModifiedBy).IsRequired(false).HasMaxLength(10);
+            builder.Property(r => r.LastModified).IsRequired(false);
+            builder.Property(r => r.IsDeleted).IsRequired();
         }
     }
 }
