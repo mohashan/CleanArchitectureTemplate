@@ -39,6 +39,7 @@ namespace WebUI
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // To Do : Add Swagger
             app.UseCustomExceptionHandler();
 
             app.UseHttpsRedirection();

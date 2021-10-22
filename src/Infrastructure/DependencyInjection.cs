@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure
 {
+    // To Do : "DependencyInjection"???
     public static class DependencyInjection
     {
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, ApplicationConfiguration applicationConfiguration)

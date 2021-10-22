@@ -2,6 +2,7 @@
 
 namespace Domain.Common
 {
+    // To Do : IEntity and AudtableEntity are the same
     public interface IEntity
     {
         public int Id { get; set; }

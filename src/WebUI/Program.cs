@@ -95,6 +95,8 @@ namespace WebUI
                 using (var scope = host.Services.CreateScope())
                 {
                     var services = scope.ServiceProvider;
+                    // To Do : Seed remove from here and add to "ApplicationDbContext > OnModelCreating
+                    // To Do : Seed Order and Product too
                     try
                     {
                         var context = services.GetRequiredService<ApplicationDbContext>();

@@ -9,6 +9,7 @@ namespace Infrastructure.Persistence
 {
     public static class ApplicationDbContextSeed
     {
+        // To Do : Add Methods to seed Order and Product
         public static async Task SeedDefaultUserAsync(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             var administratorRole = new ApplicationRole
