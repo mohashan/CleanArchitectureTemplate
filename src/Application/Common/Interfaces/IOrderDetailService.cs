@@ -1,5 +1,5 @@
-﻿using Application.DataTransferObjects.OrderDetail;
-using System.Collections.Generic;
+﻿using Application.DataTransferObjects.Common;
+using Application.DataTransferObjects.OrderDetail;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +9,7 @@ namespace Application.Common.Interfaces
     {
         #region OrderDetail
 
-        Task<List<ShowOrderDetailDto>> SelectAllOrderDetails(CancellationToken cancellationToken);
+        Task<PaginatedList<ShowOrderDetailDto>> SelectAllOrderDetails(int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<ShowOrderDetailDto> SelectOrderDetail(int orderDetailId, CancellationToken cancellationToken);
         Task<ShowOrderDetailDto> InsertOrderDetail(CreateOrderDetailDto orderDetail, CancellationToken cancellationToken);
         Task<ShowOrderDetailDto> UpdateOrderDetail(int orderDetailId, UpdateOrderDetailDto orderDetail, CancellationToken cancellationToken);

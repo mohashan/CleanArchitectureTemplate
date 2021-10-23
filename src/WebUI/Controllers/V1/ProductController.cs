@@ -1,9 +1,11 @@
-﻿using Application.Common.Controller;
+﻿using Application.Common.Configuration;
+using Application.Common.Controller;
 using Application.Common.Interfaces;
+using Application.DataTransferObjects.Common;
 using Application.DataTransferObjects.Products;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,17 +15,20 @@ namespace WebUI.Controllers.V1
     {
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
+        private readonly ApplicationConfiguration _applicationConfiguration;
 
-        public ProductController(IProductService productService, IMapper mapper)
+        public ProductController(IProductService productService, IMapper mapper, IOptionsSnapshot<ApplicationConfiguration> applicationConfiguration)
         {
             _productService = productService;
             _mapper = mapper;
+            _applicationConfiguration = applicationConfiguration.Value;
         }
 
         [HttpGet]
-        public virtual async Task<List<ShowProductDto>> Get(CancellationToken cancellationToken)
+        public virtual async Task<PaginatedList<ShowProductDto>> Get(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 0)
         {
-            return await _productService.SelectAllProducts(cancellationToken);
+            pageSize = pageSize == 0 ? _applicationConfiguration.DefaultPageSize : pageSize;
+            return await _productService.SelectAllProducts(pageNumber, pageSize, cancellationToken);
         }
 
         [HttpGet("{id}")]

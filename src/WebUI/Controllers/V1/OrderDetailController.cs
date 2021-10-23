@@ -1,9 +1,11 @@
-﻿using Application.Common.Controller;
+﻿using Application.Common.Configuration;
+using Application.Common.Controller;
 using Application.Common.Interfaces;
+using Application.DataTransferObjects.Common;
 using Application.DataTransferObjects.OrderDetail;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,17 +16,20 @@ namespace WebUI.Controllers.V1
 
         private readonly IOrderDetailService _orderDetailService;
         private readonly ILogger<OrderController> _logger;
+        private readonly ApplicationConfiguration _applicationConfiguration;
 
-        public OrderDetailController(IOrderDetailService orderDetailService, ILogger<OrderController> logger)
+        public OrderDetailController(IOrderDetailService orderDetailService, IOptionsSnapshot<ApplicationConfiguration> applicationConfiguration, ILogger<OrderController> logger)
         {
             _orderDetailService = orderDetailService;
             _logger = logger;
+            _applicationConfiguration = applicationConfiguration.Value;
         }
 
         [HttpGet]
-        public virtual async Task<List<ShowOrderDetailDto>> Get(CancellationToken cancellationToken)
+        public virtual async Task<PaginatedList<ShowOrderDetailDto>> Get(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 0)
         {
-            return await _orderDetailService.SelectAllOrderDetails(cancellationToken);
+            pageSize = pageSize == 0 ? _applicationConfiguration.DefaultPageSize : pageSize;
+            return await _orderDetailService.SelectAllOrderDetails(pageNumber, pageSize, cancellationToken);
         }
 
         [HttpGet("{id}")]
