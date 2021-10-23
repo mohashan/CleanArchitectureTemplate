@@ -1,10 +1,13 @@
-﻿namespace Domain.Enums
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domain.Enums
 {
-    // To Do : Male , Female
-    // To Do : Display Attribute must be included
     public enum Gender
     {
-        Man = 0,
+        [Display(Name = "Male")]
+        Male = 0,
+        
+        [Display(Name = "Female")]
         Female = 1
     }
 }
