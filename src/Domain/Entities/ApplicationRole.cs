@@ -4,7 +4,7 @@ using System;
 
 namespace Domain.Entities
 {
-    public class ApplicationRole : IdentityRole<int>, IEntity
+    public class ApplicationRole : IdentityRole<int>, IAuditableEntity
     {
         public DateTime Created { get; set; }
         public string CreatedBy { get; set; }
