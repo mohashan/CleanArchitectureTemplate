@@ -16,6 +16,7 @@ using Serilog.Sinks.Elasticsearch;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WebUI
@@ -95,8 +96,6 @@ namespace WebUI
                 using (var scope = host.Services.CreateScope())
                 {
                     var services = scope.ServiceProvider;
-                    // To Do : Seed remove from here and add to "ApplicationDbContext > OnModelCreating
-                    // To Do : Seed Order and Product too
                     try
                     {
                         var context = services.GetRequiredService<ApplicationDbContext>();
@@ -108,7 +107,10 @@ namespace WebUI
                         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                         var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
+
                         await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
+                        await ApplicationDbContextSeed.SeedDefaultProductAndOrderAsync(context,
+                            new CancellationToken(false));
                     }
                     catch (Exception ex)
                     {
