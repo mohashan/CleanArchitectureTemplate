@@ -9,10 +9,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Common.ServiceLifetimes;
 
 namespace Infrastructure.Services
 {
-    public class Repository<TEntity> : IRepository<TEntity>
+    public class Repository<TEntity> : IRepository<TEntity>, IScopedDependency
          where TEntity : class, IEntity
     {
         protected readonly ApplicationDbContext DbContext;

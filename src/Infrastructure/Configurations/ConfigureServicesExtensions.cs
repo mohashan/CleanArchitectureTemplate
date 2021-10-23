@@ -1,10 +1,8 @@
 ﻿using Application.Common.Api;
 using Application.Common.Configuration;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces;
 using Domain.Entities;
 using Infrastructure.Persistence;
-using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,23 +18,21 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure
+namespace Infrastructure.Configurations
 {
-    // To Do : "DependencyInjection"???
-    public static class DependencyInjection
+    public static class ConfigureServicesExtensions
     {
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration, ApplicationConfiguration applicationConfiguration)
+        public static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("SqlConnection"),
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
             });
+        }
 
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
-            #region Identity
-
+        public static void AddAuthentication(this IServiceCollection services, ApplicationConfiguration applicationConfiguration)
+        {
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
                 options.Password.RequiredLength = applicationConfiguration.IdentityConfiguration.PasswordRequiredLength;
@@ -132,11 +128,10 @@ namespace Infrastructure
                     }
                 };
             });
+        }
 
-            #endregion
-
-            #region Api Versioning
-
+        public static void AddCustomApiVersioning(this IServiceCollection services)
+        {
             services.AddApiVersioning(options =>
             {
                 options.AssumeDefaultVersionWhenUnspecified = true;
@@ -146,8 +141,6 @@ namespace Infrastructure
 
                 options.ReportApiVersions = true;
             });
-
-            #endregion
         }
     }
 }
