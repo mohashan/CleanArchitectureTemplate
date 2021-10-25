@@ -3,13 +3,13 @@ using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Application.Common.ServiceLifetimes;
 using Application.Common.Utilities;
+using Application.DataTransferObjects.Common;
 using Application.DataTransferObjects.OrderDetail;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,17 +33,17 @@ namespace Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task<List<ShowOrderDetailDto>> SelectAllOrderDetails(CancellationToken cancellationToken)
+        public async Task<PaginatedList<ShowOrderDetailDto>> SelectAllOrderDetails(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var orderDetails = await _orderDetailRepository.TableNoTracking.ProjectTo<ShowOrderDetailDto>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+            var paginatedOrderDetails = await _orderDetailRepository.TableNoTracking
+                .ProjectTo<ShowOrderDetailDto>(_mapper.ConfigurationProvider).PaginatedListAsync(pageNumber, pageSize);
 
-            if (orderDetails == null || !orderDetails.Any())
+            if (paginatedOrderDetails.Items == null || !paginatedOrderDetails.Items.Any())
             {
                 throw new AppException(ApiResultStatusCode.ListEmpty, ApiResultStatusCode.ListEmpty.ToString());
             }
 
-            return orderDetails;
+            return paginatedOrderDetails;
         }
 
         public async Task<ShowOrderDetailDto> SelectOrderDetail(int orderDetailId, CancellationToken cancellationToken)

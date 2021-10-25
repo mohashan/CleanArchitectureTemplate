@@ -1,9 +1,11 @@
-﻿using Application.Common.Controller;
+﻿using Application.Common.Configuration;
+using Application.Common.Controller;
 using Application.Common.Interfaces;
+using Application.DataTransferObjects.Common;
 using Application.DataTransferObjects.Order;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,17 +15,20 @@ namespace WebUI.Controllers.V1
     {
         private readonly IOrderService _orderService;
         private readonly ILogger<OrderController> _logger;
+        private readonly ApplicationConfiguration _applicationConfiguration;
 
-        public OrderController(IOrderService orderService, ILogger<OrderController> logger)
+        public OrderController(IOrderService orderService, IOptionsSnapshot<ApplicationConfiguration> applicationConfiguration, ILogger<OrderController> logger)
         {
             _orderService = orderService;
             _logger = logger;
+            _applicationConfiguration = applicationConfiguration.Value;
         }
 
         [HttpGet]
-        public virtual async Task<List<ShowOrderDto>> Get(CancellationToken cancellationToken)
+        public virtual async Task<PaginatedList<ShowOrderDto>> Get(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 0)
         {
-            return await _orderService.SelectAllOrders(cancellationToken);
+            pageSize = pageSize == 0 ? _applicationConfiguration.DefaultPageSize : pageSize;
+            return await _orderService.SelectAllOrders(pageNumber,pageSize,cancellationToken);
         }
 
         [HttpGet("{id}")]

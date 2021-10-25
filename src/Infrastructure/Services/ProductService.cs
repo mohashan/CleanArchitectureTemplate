@@ -3,13 +3,13 @@ using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Application.Common.ServiceLifetimes;
 using Application.Common.Utilities;
+using Application.DataTransferObjects.Common;
 using Application.DataTransferObjects.Products;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,19 +29,19 @@ namespace Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task<List<ShowProductDto>> SelectAllProducts(CancellationToken cancellationToken)
+        public async Task<PaginatedList<ShowProductDto>> SelectAllProducts(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var products = await _productRepository
+            var paginatedProducts = await _productRepository
                 .TableNoTracking
                 .ProjectTo<ShowProductDto>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+                .PaginatedListAsync(pageNumber, pageSize);
 
-            if (products == null || !products.Any())
+            if (paginatedProducts.Items == null || !paginatedProducts.Items.Any())
             {
                 throw new AppException(ApiResultStatusCode.ListEmpty, ApiResultStatusCode.ListEmpty.ToDisplay());
             }
 
-            return products;
+            return paginatedProducts;
         }
 
         public async Task<ShowProductDto> SelectProduct(int productId, CancellationToken cancellationToken)
@@ -87,8 +87,8 @@ namespace Infrastructure.Services
             }
 
             var oldProduct = await _productRepository.GetByIdAsync(cancellationToken, productId);
-            
-            var newProduct = product.ToEntity(_mapper,oldProduct);
+
+            var newProduct = product.ToEntity(_mapper, oldProduct);
             await _productRepository.UpdateAsync(newProduct, cancellationToken);
 
             return ShowProductDto.FromEntity(_mapper, newProduct);
