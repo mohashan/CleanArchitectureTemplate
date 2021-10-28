@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebUI</name>
+    </assembly>
+    <members>
+        <member name="T:WebUI.Startup">
+            <summary>
+            Application StartUp
+            </summary>
+        </member>
+        <member name="M:WebUI.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            StartUp Constructor
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:WebUI.Startup.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WebUI.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Application Services Configuration
+            </summary>
+            <param name="services"> IServiceCollection </param>
+        </member>
+        <member name="M:WebUI.Startup.ConfigureContainer(Autofac.ContainerBuilder)">
+            <summary>
+            Autofac IOC
+            </summary>
+            <param name="containerBuilder"></param>
+        </member>
+        <member name="M:WebUI.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            Application PipeLine Configuration
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+        </member>
+    </members>
+</doc>

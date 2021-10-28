@@ -33,5 +33,6 @@ namespace WebUI.Configuration
         {
             app.UseMiddleware<CustomExceptionHandlerMiddleware>();
         }
+
     }
 }

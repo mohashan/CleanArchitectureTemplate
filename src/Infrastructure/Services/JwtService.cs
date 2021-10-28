@@ -1,5 +1,7 @@
 ﻿using Application.Common.Configuration;
 using Application.Common.Interfaces;
+using Application.Common.ServiceLifetimes;
+using Application.DataTransferObjects.User;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -11,7 +13,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Common.ServiceLifetimes;
 
 namespace Infrastructure.Services
 {
@@ -26,7 +27,7 @@ namespace Infrastructure.Services
             _applicationConfiguration = applicationConfiguration.Value;
         }
 
-        public async Task<string> GenerateAsync(ApplicationUser user, CancellationToken cancellationToken)
+        public async Task<SignInResultDto> GenerateAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_applicationConfiguration.JwtConfiguration.SecretKey));
             var signingCredentials =
@@ -51,8 +52,8 @@ namespace Infrastructure.Services
             };
 
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var securityToken = jwtSecurityTokenHandler.CreateToken(descriptor);
-            return jwtSecurityTokenHandler.WriteToken(securityToken);
+            var securityToken = jwtSecurityTokenHandler.CreateJwtSecurityToken(descriptor);
+            return new SignInResultDto(securityToken);
         }
 
         private async Task<IEnumerable<Claim>> GetClaimsAsync(ApplicationUser user)

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace WebUI.Controllers.V1
 {
+    [ApiVersion("1")]
     public class UserController : BaseController
     {
         private readonly IIdentityService _identityService;
@@ -22,10 +23,11 @@ namespace WebUI.Controllers.V1
 
         [HttpPost("SignIn")]
         [AllowAnonymous]
-        public virtual async Task<SignInResultDto> SignIn([FromBody] SignInDto signIn, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult> SignIn([FromForm] SignInDto signIn, CancellationToken cancellationToken)
         {
             var result = await _identityService.SignInAsync(signIn, cancellationToken);
-            return result;
+            return new JsonResult(result);
         }
+
     }
 }
