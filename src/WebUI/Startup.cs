@@ -1,7 +1,6 @@
 using Application;
 using Application.Common.Configuration;
 using Autofac;
-using Infrastructure;
 using Infrastructure.Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +27,9 @@ namespace WebUI
         {
             services.Configure<ApplicationConfiguration>(Configuration.GetSection(nameof(ApplicationConfiguration)));
             services.AddApplication(Configuration);
-            services.AddInfrastructure(Configuration, _applicationConfiguration);
+            services.AddDbContext(Configuration);
+            services.AddAuthentication(_applicationConfiguration);
+            services.AddCustomApiVersioning();
             services.AddControllers();
         }
 
