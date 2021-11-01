@@ -40,7 +40,7 @@ namespace Infrastructure.Persistence
                 UserName = "admin",
                 Email = "admin@gmail.com",
                 BirthDay = new DateTime(1994, 04, 25, 6, 30, 0),
-                Gender = Gender.Man,
+                Gender = Gender.Male,
                 Name = "Reza",
                 Family = "Neyestani",
                 ConcurrencyStamp = Guid.NewGuid().ToString(),

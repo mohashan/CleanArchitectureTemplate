@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace WebUI.Controllers.V1
 {
+    [ApiVersion("1")]
     public class ProductController : BaseController
     {
         private readonly IProductService _productService;

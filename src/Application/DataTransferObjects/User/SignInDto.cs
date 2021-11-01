@@ -4,14 +4,15 @@ namespace Application.DataTransferObjects.User
 {
     public class SignInDto
     {
-        [Display(Name = "Username")]
+        [Display(Name = "grant_type")]
         [Required(ErrorMessage = "{0} Is Required")]
-        [MaxLength(50, ErrorMessage = "Max length for {0} is {1} char")]
-        public string UserName { get; set; }
+        public string grant_type { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string refresh_token { get; set; }
+        public string scope { get; set; }
 
-        [Display(Name = "Username")]
-        [Required(ErrorMessage = "{0} Is Required")]
-        [MaxLength(50, ErrorMessage = "Max length for {0} is {1} char")]
-        public string Password { get; set; }
+        public string client_id { get; set; }
+        public string client_secret { get; set; }
     }
 }

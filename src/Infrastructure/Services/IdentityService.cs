@@ -1,11 +1,12 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.ServiceLifetimes;
 using Application.DataTransferObjects.User;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Common.ServiceLifetimes;
 
 namespace Infrastructure.Services
 {
@@ -24,25 +25,24 @@ namespace Infrastructure.Services
 
         public async Task<SignInResultDto> SignInAsync(SignInDto signin, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByNameAsync(signin.UserName);
+            if (signin.grant_type.Equals(nameof(signin.password), StringComparison.OrdinalIgnoreCase))
+            {
+                throw new BadRequestException("OAuth flow is not password");
+            }
+
+            var user = await _userManager.FindByNameAsync(signin.username);
             if (user == null)
             {
                 throw new BadRequestException("There is no user with this username");
             }
 
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, signin.Password);
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, signin.password);
             if (!isPasswordValid)
             {
                 throw new BadRequestException("Password is not valid");
             }
 
-            var token = await _jwtService.GenerateAsync(user, cancellationToken);
-
-            return new SignInResultDto
-            {
-                UserName = signin.UserName,
-                Token = token
-            };
+            return await _jwtService.GenerateAsync(user, cancellationToken);
         }
     }
 }
